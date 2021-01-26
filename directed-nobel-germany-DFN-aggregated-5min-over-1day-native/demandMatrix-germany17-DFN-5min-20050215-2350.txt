@@ -1,0 +1,310 @@
+?SNDlib native format; type: network; version: 1.0
+# network demandMatrix-germany17-DFN-5min-20050215-2350
+
+# META SECTION
+#
+# <attribute> <content>
+
+META (
+  granularity  = 5min
+  time  = 20050215-2350
+  unit  = MBITPERSEC
+  origin  = DFN Verein http://www.dfn.de, German Research Network, measurements mapped to germany17
+)
+
+# NODE SECTION
+#
+# <node_id> [(<longitude>, <latitude>)]
+
+NODES (
+  Hannover ( 9.80 52.39 )
+  Frankfurt ( 8.66 50.14 )
+  Hamburg ( 10.08 53.55 )
+  Norden ( 7.21 53.60 )
+  Bremen ( 8.80 53.08 )
+  Berlin ( 13.48 52.52 )
+  Muenchen ( 11.55 48.15 )
+  Ulm ( 9.99 48.40 )
+  Nuernberg ( 11.08 49.45 )
+  Stuttgart ( 9.12 48.73 )
+  Karlsruhe ( 8.41 49.01 )
+  Mannheim ( 8.49 49.49 )
+  Essen ( 7.00 51.44 )
+  Dortmund ( 7.48 51.51 )
+  Duesseldorf ( 6.78 51.22 )
+  Koeln ( 7.01 50.92 )
+  Leipzig ( 12.38 51.34 )
+)
+
+# LINK SECTION
+#
+# <link_id> ( <source> <target> ) <pre_installed_capacity> <pre_installed_capacity_cost> <routing_cost> <setup_cost> ( {<module_capacity> <module_cost>}* )
+
+LINKS (
+)
+
+# DEMAND SECTION
+#
+# <demand_id> ( <source> <target> ) <routing_unit> <demand_value> <max_path_length>
+
+DEMANDS (
+  Bremen_Nuernberg ( Bremen Nuernberg ) 1 0.052087 UNLIMITED
+  Bremen_Hamburg ( Bremen Hamburg ) 1 0.083543 UNLIMITED
+  Berlin_Dortmund ( Berlin Dortmund ) 1 0.298402 UNLIMITED
+  Stuttgart_Nuernberg ( Stuttgart Nuernberg ) 1 2.605726 UNLIMITED
+  Mannheim_Duesseldorf ( Mannheim Duesseldorf ) 1 0.000193 UNLIMITED
+  Hannover_Essen ( Hannover Essen ) 1 10.22 UNLIMITED
+  Leipzig_Hannover ( Leipzig Hannover ) 1 15.07171 UNLIMITED
+  Bremen_Hannover ( Bremen Hannover ) 1 28.700358 UNLIMITED
+  Muenchen_Hamburg ( Muenchen Hamburg ) 1 1.109878 UNLIMITED
+  Berlin_Muenchen ( Berlin Muenchen ) 1 39.678516 UNLIMITED
+  Koeln_Dortmund ( Koeln Dortmund ) 1 0.953123 UNLIMITED
+  Stuttgart_Leipzig ( Stuttgart Leipzig ) 1 12.067027 UNLIMITED
+  Hannover_Mannheim ( Hannover Mannheim ) 1 8.301292 UNLIMITED
+  Frankfurt_Karlsruhe ( Frankfurt Karlsruhe ) 1 43.392154 UNLIMITED
+  Bremen_Berlin ( Bremen Berlin ) 1 1.250565 UNLIMITED
+  Berlin_Bremen ( Berlin Bremen ) 1 0.628951 UNLIMITED
+  Hamburg_Frankfurt ( Hamburg Frankfurt ) 1 74.429981 UNLIMITED
+  Nuernberg_Berlin ( Nuernberg Berlin ) 1 0.365146 UNLIMITED
+  Hannover_Berlin ( Hannover Berlin ) 1 15.146939 UNLIMITED
+  Muenchen_Duesseldorf ( Muenchen Duesseldorf ) 1 0.047236 UNLIMITED
+  Koeln_Hannover ( Koeln Hannover ) 1 0.870677 UNLIMITED
+  Bremen_Leipzig ( Bremen Leipzig ) 1 4.998715 UNLIMITED
+  Norden_Koeln ( Norden Koeln ) 1 0.000148 UNLIMITED
+  Berlin_Hannover ( Berlin Hannover ) 1 0.835305 UNLIMITED
+  Norden_Frankfurt ( Norden Frankfurt ) 1 0.570437 UNLIMITED
+  Karlsruhe_Dortmund ( Karlsruhe Dortmund ) 1 0.116605 UNLIMITED
+  Nuernberg_Stuttgart ( Nuernberg Stuttgart ) 1 0.001947 UNLIMITED
+  Karlsruhe_Bremen ( Karlsruhe Bremen ) 1 0.064674 UNLIMITED
+  Karlsruhe_Hamburg ( Karlsruhe Hamburg ) 1 0.146089 UNLIMITED
+  Stuttgart_Koeln ( Stuttgart Koeln ) 1 7.070104 UNLIMITED
+  Koeln_Nuernberg ( Koeln Nuernberg ) 1 0.138817 UNLIMITED
+  Nuernberg_Hannover ( Nuernberg Hannover ) 1 0.347694 UNLIMITED
+  Hannover_Karlsruhe ( Hannover Karlsruhe ) 1 4.446185 UNLIMITED
+  Frankfurt_Muenchen ( Frankfurt Muenchen ) 1 55.185422 UNLIMITED
+  Leipzig_Frankfurt ( Leipzig Frankfurt ) 1 407.433269 UNLIMITED
+  Essen_Duesseldorf ( Essen Duesseldorf ) 1 0.000038 UNLIMITED
+  Hamburg_Mannheim ( Hamburg Mannheim ) 1 0.002633 UNLIMITED
+  Mannheim_Hannover ( Mannheim Hannover ) 1 0.111299 UNLIMITED
+  Essen_Hamburg ( Essen Hamburg ) 1 0.013074 UNLIMITED
+  Koeln_Bremen ( Koeln Bremen ) 1 0.808884 UNLIMITED
+  Karlsruhe_Nuernberg ( Karlsruhe Nuernberg ) 1 0.255899 UNLIMITED
+  Muenchen_Berlin ( Muenchen Berlin ) 1 4.420651 UNLIMITED
+  Dortmund_Muenchen ( Dortmund Muenchen ) 1 28.052778 UNLIMITED
+  Duesseldorf_Hannover ( Duesseldorf Hannover ) 1 0.079867 UNLIMITED
+  Karlsruhe_Stuttgart ( Karlsruhe Stuttgart ) 1 2.271186 UNLIMITED
+  Mannheim_Hamburg ( Mannheim Hamburg ) 1 0.106204 UNLIMITED
+  Muenchen_Leipzig ( Muenchen Leipzig ) 1 10.276602 UNLIMITED
+  Duesseldorf_Koeln ( Duesseldorf Koeln ) 1 0.361301 UNLIMITED
+  Stuttgart_Hamburg ( Stuttgart Hamburg ) 1 3.147819 UNLIMITED
+  Ulm_Muenchen ( Ulm Muenchen ) 1 0.208681 UNLIMITED
+  Leipzig_Mannheim ( Leipzig Mannheim ) 1 0.097432 UNLIMITED
+  Karlsruhe_Frankfurt ( Karlsruhe Frankfurt ) 1 32.033382 UNLIMITED
+  Hannover_Ulm ( Hannover Ulm ) 1 0.068369 UNLIMITED
+  Berlin_Koeln ( Berlin Koeln ) 1 4.416426 UNLIMITED
+  Berlin_Duesseldorf ( Berlin Duesseldorf ) 1 0.002163 UNLIMITED
+  Nuernberg_Koeln ( Nuernberg Koeln ) 1 1.733873 UNLIMITED
+  Leipzig_Essen ( Leipzig Essen ) 1 0.635061 UNLIMITED
+  Nuernberg_Essen ( Nuernberg Essen ) 1 0.002901 UNLIMITED
+  Frankfurt_Koeln ( Frankfurt Koeln ) 1 121.08492 UNLIMITED
+  Mannheim_Frankfurt ( Mannheim Frankfurt ) 1 94.699435 UNLIMITED
+  Essen_Muenchen ( Essen Muenchen ) 1 1.81928 UNLIMITED
+  Leipzig_Duesseldorf ( Leipzig Duesseldorf ) 1 0.001512 UNLIMITED
+  Muenchen_Karlsruhe ( Muenchen Karlsruhe ) 1 0.180464 UNLIMITED
+  Bremen_Frankfurt ( Bremen Frankfurt ) 1 111.502335 UNLIMITED
+  Duesseldorf_Bremen ( Duesseldorf Bremen ) 1 0.310653 UNLIMITED
+  Frankfurt_Nuernberg ( Frankfurt Nuernberg ) 1 30.3614 UNLIMITED
+  Ulm_Bremen ( Ulm Bremen ) 1 0.000248 UNLIMITED
+  Nuernberg_Frankfurt ( Nuernberg Frankfurt ) 1 97.432541 UNLIMITED
+  Ulm_Nuernberg ( Ulm Nuernberg ) 1 0.00187 UNLIMITED
+  Muenchen_Mannheim ( Muenchen Mannheim ) 1 0.267958 UNLIMITED
+  Mannheim_Bremen ( Mannheim Bremen ) 1 4.406146 UNLIMITED
+  Hannover_Frankfurt ( Hannover Frankfurt ) 1 234.136761 UNLIMITED
+  Duesseldorf_Stuttgart ( Duesseldorf Stuttgart ) 1 0.048349 UNLIMITED
+  Stuttgart_Bremen ( Stuttgart Bremen ) 1 2.410943 UNLIMITED
+  Essen_Nuernberg ( Essen Nuernberg ) 1 0.004448 UNLIMITED
+  Karlsruhe_Duesseldorf ( Karlsruhe Duesseldorf ) 1 0.000203 UNLIMITED
+  Stuttgart_Dortmund ( Stuttgart Dortmund ) 1 2.734408 UNLIMITED
+  Koeln_Mannheim ( Koeln Mannheim ) 1 0.063484 UNLIMITED
+  Hamburg_Nuernberg ( Hamburg Nuernberg ) 1 0.028028 UNLIMITED
+  Ulm_Frankfurt ( Ulm Frankfurt ) 1 1.612302 UNLIMITED
+  Bremen_Norden ( Bremen Norden ) 1 0.025457 UNLIMITED
+  Berlin_Essen ( Berlin Essen ) 1 0.051832 UNLIMITED
+  Leipzig_Berlin ( Leipzig Berlin ) 1 3.14738 UNLIMITED
+  Karlsruhe_Leipzig ( Karlsruhe Leipzig ) 1 0.418868 UNLIMITED
+  Leipzig_Koeln ( Leipzig Koeln ) 1 9.371793 UNLIMITED
+  Berlin_Frankfurt ( Berlin Frankfurt ) 1 152.736324 UNLIMITED
+  Duesseldorf_Dortmund ( Duesseldorf Dortmund ) 1 0.022909 UNLIMITED
+  Koeln_Leipzig ( Koeln Leipzig ) 1 6.452103 UNLIMITED
+  Karlsruhe_Muenchen ( Karlsruhe Muenchen ) 1 0.387248 UNLIMITED
+  Dortmund_Essen ( Dortmund Essen ) 1 0.023466 UNLIMITED
+  Leipzig_Hamburg ( Leipzig Hamburg ) 1 1.647158 UNLIMITED
+  Bremen_Muenchen ( Bremen Muenchen ) 1 5.834748 UNLIMITED
+  Essen_Stuttgart ( Essen Stuttgart ) 1 0.014177 UNLIMITED
+  Bremen_Koeln ( Bremen Koeln ) 1 2.713657 UNLIMITED
+  Muenchen_Bremen ( Muenchen Bremen ) 1 0.525695 UNLIMITED
+  Berlin_Hamburg ( Berlin Hamburg ) 1 1.077481 UNLIMITED
+  Hannover_Nuernberg ( Hannover Nuernberg ) 1 3.057761 UNLIMITED
+  Koeln_Muenchen ( Koeln Muenchen ) 1 1.086236 UNLIMITED
+  Essen_Koeln ( Essen Koeln ) 1 0.247771 UNLIMITED
+  Frankfurt_Leipzig ( Frankfurt Leipzig ) 1 222.95273 UNLIMITED
+  Hannover_Muenchen ( Hannover Muenchen ) 1 41.034981 UNLIMITED
+  Leipzig_Norden ( Leipzig Norden ) 1 0.002548 UNLIMITED
+  Muenchen_Dortmund ( Muenchen Dortmund ) 1 5.202691 UNLIMITED
+  Ulm_Hannover ( Ulm Hannover ) 1 0.000014 UNLIMITED
+  Berlin_Norden ( Berlin Norden ) 1 0.000046 UNLIMITED
+  Stuttgart_Essen ( Stuttgart Essen ) 1 0.799129 UNLIMITED
+  Hamburg_Muenchen ( Hamburg Muenchen ) 1 4.834693 UNLIMITED
+  Dortmund_Berlin ( Dortmund Berlin ) 1 3.802844 UNLIMITED
+  Hamburg_Leipzig ( Hamburg Leipzig ) 1 8.857109 UNLIMITED
+  Nuernberg_Dortmund ( Nuernberg Dortmund ) 1 0.00879 UNLIMITED
+  Koeln_Norden ( Koeln Norden ) 1 0.000054 UNLIMITED
+  Dortmund_Frankfurt ( Dortmund Frankfurt ) 1 95.71466 UNLIMITED
+  Hamburg_Berlin ( Hamburg Berlin ) 1 0.377111 UNLIMITED
+  Duesseldorf_Mannheim ( Duesseldorf Mannheim ) 1 0.000054 UNLIMITED
+  Stuttgart_Norden ( Stuttgart Norden ) 1 0.002218 UNLIMITED
+  Stuttgart_Karlsruhe ( Stuttgart Karlsruhe ) 1 0.757352 UNLIMITED
+  Essen_Bremen ( Essen Bremen ) 1 0.265455 UNLIMITED
+  Stuttgart_Duesseldorf ( Stuttgart Duesseldorf ) 1 0.04643 UNLIMITED
+  Frankfurt_Essen ( Frankfurt Essen ) 1 18.687341 UNLIMITED
+  Muenchen_Koeln ( Muenchen Koeln ) 1 2.379289 UNLIMITED
+  Bremen_Dortmund ( Bremen Dortmund ) 1 0.080038 UNLIMITED
+  Leipzig_Dortmund ( Leipzig Dortmund ) 1 1.207179 UNLIMITED
+  Hamburg_Norden ( Hamburg Norden ) 1 0.00016 UNLIMITED
+  Mannheim_Leipzig ( Mannheim Leipzig ) 1 0.684142 UNLIMITED
+  Ulm_Koeln ( Ulm Koeln ) 1 0.008197 UNLIMITED
+  Dortmund_Duesseldorf ( Dortmund Duesseldorf ) 1 0.00061 UNLIMITED
+  Dortmund_Hamburg ( Dortmund Hamburg ) 1 0.00631 UNLIMITED
+  Norden_Bremen ( Norden Bremen ) 1 0.038946 UNLIMITED
+  Leipzig_Ulm ( Leipzig Ulm ) 1 0.007975 UNLIMITED
+  Karlsruhe_Berlin ( Karlsruhe Berlin ) 1 0.136244 UNLIMITED
+  Hamburg_Bremen ( Hamburg Bremen ) 1 0.07207 UNLIMITED
+  Muenchen_Ulm ( Muenchen Ulm ) 1 0.04474 UNLIMITED
+  Nuernberg_Duesseldorf ( Nuernberg Duesseldorf ) 1 0.000411 UNLIMITED
+  Muenchen_Essen ( Muenchen Essen ) 1 0.557298 UNLIMITED
+  Hamburg_Duesseldorf ( Hamburg Duesseldorf ) 1 0.000124 UNLIMITED
+  Mannheim_Nuernberg ( Mannheim Nuernberg ) 1 0.066421 UNLIMITED
+  Ulm_Stuttgart ( Ulm Stuttgart ) 1 0.000219 UNLIMITED
+  Nuernberg_Leipzig ( Nuernberg Leipzig ) 1 52.584413 UNLIMITED
+  Hannover_Duesseldorf ( Hannover Duesseldorf ) 1 0.168396 UNLIMITED
+  Mannheim_Dortmund ( Mannheim Dortmund ) 1 0.065446 UNLIMITED
+  Duesseldorf_Karlsruhe ( Duesseldorf Karlsruhe ) 1 0.000124 UNLIMITED
+  Mannheim_Essen ( Mannheim Essen ) 1 0.007871 UNLIMITED
+  Hannover_Dortmund ( Hannover Dortmund ) 1 10.335903 UNLIMITED
+  Nuernberg_Mannheim ( Nuernberg Mannheim ) 1 7.083149 UNLIMITED
+  Karlsruhe_Hannover ( Karlsruhe Hannover ) 1 1.779578 UNLIMITED
+  Koeln_Berlin ( Koeln Berlin ) 1 0.734591 UNLIMITED
+  Stuttgart_Ulm ( Stuttgart Ulm ) 1 0.020846 UNLIMITED
+  Berlin_Stuttgart ( Berlin Stuttgart ) 1 0.023972 UNLIMITED
+  Nuernberg_Hamburg ( Nuernberg Hamburg ) 1 0.117858 UNLIMITED
+  Karlsruhe_Mannheim ( Karlsruhe Mannheim ) 1 0.319981 UNLIMITED
+  Norden_Stuttgart ( Norden Stuttgart ) 1 0.000009 UNLIMITED
+  Hannover_Hamburg ( Hannover Hamburg ) 1 6.77778 UNLIMITED
+  Mannheim_Stuttgart ( Mannheim Stuttgart ) 1 27.143468 UNLIMITED
+  Duesseldorf_Hamburg ( Duesseldorf Hamburg ) 1 0.001043 UNLIMITED
+  Hamburg_Karlsruhe ( Hamburg Karlsruhe ) 1 0.145269 UNLIMITED
+  Essen_Frankfurt ( Essen Frankfurt ) 1 32.794604 UNLIMITED
+  Norden_Leipzig ( Norden Leipzig ) 1 0.01963 UNLIMITED
+  Stuttgart_Muenchen ( Stuttgart Muenchen ) 1 4.366146 UNLIMITED
+  Bremen_Stuttgart ( Bremen Stuttgart ) 1 0.01635 UNLIMITED
+  Mannheim_Karlsruhe ( Mannheim Karlsruhe ) 1 0.095758 UNLIMITED
+  Norden_Nuernberg ( Norden Nuernberg ) 1 0.000047 UNLIMITED
+  Duesseldorf_Frankfurt ( Duesseldorf Frankfurt ) 1 3.776893 UNLIMITED
+  Frankfurt_Berlin ( Frankfurt Berlin ) 1 75.198019 UNLIMITED
+  Dortmund_Stuttgart ( Dortmund Stuttgart ) 1 0.00124 UNLIMITED
+  Mannheim_Berlin ( Mannheim Berlin ) 1 0.060505 UNLIMITED
+  Norden_Muenchen ( Norden Muenchen ) 1 0.015707 UNLIMITED
+  Hamburg_Hannover ( Hamburg Hannover ) 1 7.782877 UNLIMITED
+  Koeln_Karlsruhe ( Koeln Karlsruhe ) 1 4.83386 UNLIMITED
+  Karlsruhe_Koeln ( Karlsruhe Koeln ) 1 1.163236 UNLIMITED
+  Hannover_Stuttgart ( Hannover Stuttgart ) 1 0.55094 UNLIMITED
+  Berlin_Leipzig ( Berlin Leipzig ) 1 47.449509 UNLIMITED
+  Hannover_Koeln ( Hannover Koeln ) 1 18.030223 UNLIMITED
+  Stuttgart_Frankfurt ( Stuttgart Frankfurt ) 1 100.566386 UNLIMITED
+  Muenchen_Norden ( Muenchen Norden ) 1 0.000455 UNLIMITED
+  Essen_Leipzig ( Essen Leipzig ) 1 21.579547 UNLIMITED
+  Frankfurt_Hamburg ( Frankfurt Hamburg ) 1 73.558496 UNLIMITED
+  Leipzig_Nuernberg ( Leipzig Nuernberg ) 1 7.145 UNLIMITED
+  Frankfurt_Hannover ( Frankfurt Hannover ) 1 86.712228 UNLIMITED
+  Berlin_Nuernberg ( Berlin Nuernberg ) 1 0.394803 UNLIMITED
+  Berlin_Mannheim ( Berlin Mannheim ) 1 0.045009 UNLIMITED
+  Norden_Hamburg ( Norden Hamburg ) 1 0.000016 UNLIMITED
+  Dortmund_Hannover ( Dortmund Hannover ) 1 3.151079 UNLIMITED
+  Hamburg_Koeln ( Hamburg Koeln ) 1 5.572646 UNLIMITED
+  Bremen_Ulm ( Bremen Ulm ) 1 0.000428 UNLIMITED
+  Hannover_Leipzig ( Hannover Leipzig ) 1 25.553011 UNLIMITED
+  Koeln_Duesseldorf ( Koeln Duesseldorf ) 1 0.000473 UNLIMITED
+  Leipzig_Bremen ( Leipzig Bremen ) 1 3.732736 UNLIMITED
+  Essen_Mannheim ( Essen Mannheim ) 1 0.000049 UNLIMITED
+  Frankfurt_Dortmund ( Frankfurt Dortmund ) 1 49.749114 UNLIMITED
+  Essen_Karlsruhe ( Essen Karlsruhe ) 1 0.062338 UNLIMITED
+  Duesseldorf_Nuernberg ( Duesseldorf Nuernberg ) 1 0.004352 UNLIMITED
+  Frankfurt_Ulm ( Frankfurt Ulm ) 1 0.564384 UNLIMITED
+  Frankfurt_Mannheim ( Frankfurt Mannheim ) 1 7.140311 UNLIMITED
+  Nuernberg_Bremen ( Nuernberg Bremen ) 1 0.033548 UNLIMITED
+  Duesseldorf_Essen ( Duesseldorf Essen ) 1 0.004251 UNLIMITED
+  Nuernberg_Ulm ( Nuernberg Ulm ) 1 0.00105 UNLIMITED
+  Hannover_Norden ( Hannover Norden ) 1 0.04018 UNLIMITED
+  Ulm_Karlsruhe ( Ulm Karlsruhe ) 1 0.000098 UNLIMITED
+  Hannover_Bremen ( Hannover Bremen ) 1 6.796961 UNLIMITED
+  Stuttgart_Mannheim ( Stuttgart Mannheim ) 1 0.576593 UNLIMITED
+  Koeln_Ulm ( Koeln Ulm ) 1 0.00114 UNLIMITED
+  Bremen_Essen ( Bremen Essen ) 1 0.008284 UNLIMITED
+  Bremen_Mannheim ( Bremen Mannheim ) 1 0.100855 UNLIMITED
+  Dortmund_Nuernberg ( Dortmund Nuernberg ) 1 0.049212 UNLIMITED
+  Hamburg_Stuttgart ( Hamburg Stuttgart ) 1 0.003584 UNLIMITED
+  Muenchen_Frankfurt ( Muenchen Frankfurt ) 1 63.989986 UNLIMITED
+  Essen_Dortmund ( Essen Dortmund ) 1 0.0401 UNLIMITED
+  Dortmund_Bremen ( Dortmund Bremen ) 1 0.456734 UNLIMITED
+  Dortmund_Leipzig ( Dortmund Leipzig ) 1 17.814637 UNLIMITED
+  Koeln_Frankfurt ( Koeln Frankfurt ) 1 215.751902 UNLIMITED
+  Dortmund_Norden ( Dortmund Norden ) 1 0.000193 UNLIMITED
+  Duesseldorf_Berlin ( Duesseldorf Berlin ) 1 0.088526 UNLIMITED
+  Norden_Karlsruhe ( Norden Karlsruhe ) 1 0.000009 UNLIMITED
+  Leipzig_Karlsruhe ( Leipzig Karlsruhe ) 1 7.148797 UNLIMITED
+  Duesseldorf_Muenchen ( Duesseldorf Muenchen ) 1 0.379556 UNLIMITED
+  Dortmund_Karlsruhe ( Dortmund Karlsruhe ) 1 0.085826 UNLIMITED
+  Leipzig_Stuttgart ( Leipzig Stuttgart ) 1 0.299617 UNLIMITED
+  Dortmund_Mannheim ( Dortmund Mannheim ) 1 0.031688 UNLIMITED
+  Norden_Berlin ( Norden Berlin ) 1 0.000261 UNLIMITED
+  Nuernberg_Karlsruhe ( Nuernberg Karlsruhe ) 1 5.126899 UNLIMITED
+  Ulm_Leipzig ( Ulm Leipzig ) 1 0.006564 UNLIMITED
+  Frankfurt_Bremen ( Frankfurt Bremen ) 1 56.945953 UNLIMITED
+  Muenchen_Hannover ( Muenchen Hannover ) 1 18.276584 UNLIMITED
+  Hamburg_Dortmund ( Hamburg Dortmund ) 1 0.028564 UNLIMITED
+  Frankfurt_Stuttgart ( Frankfurt Stuttgart ) 1 24.276292 UNLIMITED
+  Koeln_Stuttgart ( Koeln Stuttgart ) 1 95.503061 UNLIMITED
+  Koeln_Essen ( Koeln Essen ) 1 0.182745 UNLIMITED
+  Hamburg_Essen ( Hamburg Essen ) 1 0.004515 UNLIMITED
+  Leipzig_Muenchen ( Leipzig Muenchen ) 1 41.179972 UNLIMITED
+  Nuernberg_Muenchen ( Nuernberg Muenchen ) 1 19.726186 UNLIMITED
+  Norden_Essen ( Norden Essen ) 1 0.000006 UNLIMITED
+  Muenchen_Nuernberg ( Muenchen Nuernberg ) 1 0.884598 UNLIMITED
+  Dortmund_Koeln ( Dortmund Koeln ) 1 2.660384 UNLIMITED
+  Berlin_Ulm ( Berlin Ulm ) 1 0.001568 UNLIMITED
+  Bremen_Duesseldorf ( Bremen Duesseldorf ) 1 0.000031 UNLIMITED
+  Berlin_Karlsruhe ( Berlin Karlsruhe ) 1 0.482499 UNLIMITED
+  Ulm_Berlin ( Ulm Berlin ) 1 0.001308 UNLIMITED
+  Frankfurt_Duesseldorf ( Frankfurt Duesseldorf ) 1 4.076607 UNLIMITED
+  Frankfurt_Norden ( Frankfurt Norden ) 1 0.482374 UNLIMITED
+  Mannheim_Koeln ( Mannheim Koeln ) 1 1.657762 UNLIMITED
+  Essen_Berlin ( Essen Berlin ) 1 0.065133 UNLIMITED
+  Bremen_Karlsruhe ( Bremen Karlsruhe ) 1 0.015252 UNLIMITED
+  Duesseldorf_Leipzig ( Duesseldorf Leipzig ) 1 0.130603 UNLIMITED
+  Norden_Dortmund ( Norden Dortmund ) 1 0.000002 UNLIMITED
+  Norden_Hannover ( Norden Hannover ) 1 0.102096 UNLIMITED
+  Stuttgart_Berlin ( Stuttgart Berlin ) 1 28.256692 UNLIMITED
+  Koeln_Hamburg ( Koeln Hamburg ) 1 11.931886 UNLIMITED
+  Karlsruhe_Essen ( Karlsruhe Essen ) 1 0.001065 UNLIMITED
+  Muenchen_Stuttgart ( Muenchen Stuttgart ) 1 0.693375 UNLIMITED
+  Mannheim_Muenchen ( Mannheim Muenchen ) 1 2.851508 UNLIMITED
+  Stuttgart_Hannover ( Stuttgart Hannover ) 1 4.264843 UNLIMITED
+  Essen_Hannover ( Essen Hannover ) 1 1.129926 UNLIMITED
+)
+
+# ADMISSIBLE PATHS SECTION
+#
+# <demand_id> ( {<path_id> ( <link_id>+ )}+ )
+
+ADMISSIBLE_PATHS ( 
+)
