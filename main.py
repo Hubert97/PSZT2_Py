@@ -162,14 +162,14 @@ def explore_path(input_matrix , trace_back, source, map_class,tier, cost_trace_b
     A = A.dot(B)
     for iter_b in range(0, len(new_trace_back)):
         A[iter_b] = new_trace_back[iter_b]
-    input_matrix.append(A)      # wsadz nowa scierzke do macierzy
+    input_matrix.append(A)      # wsadz nowa scieżke do macierzy
 
     iter_a = 0;
-    print(new_tier)
+    #print(new_tier)
 
     for link in map_class.Link_Class:
 
-        if link.id_begin == source: # jesli link begin jest roowny nodowi z ktorego wychodzimy
+        if link.id_begin == source: # jesli link begin jest rowny nodowi z ktorego wychodzimy
             chk_flag = 0
             dst_id = -1
             for node in map_class.Node_Class:
@@ -218,7 +218,7 @@ def generate_dataset(map_class):
         explore_path(input_matrix, trace_back, map_class.Node_Class[iter_a].id, map_class,0,cost)
     print(input_matrix)
     print(len(input_matrix))
-    print(map_class.cost)
+    #print(map_class.cost)
 
 
 
