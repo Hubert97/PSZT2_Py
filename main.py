@@ -227,8 +227,8 @@ def generate_dataset(map_class):
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     print('Program Init')
-    city_map=map_class()
-    city_map = map_class();
+    city_map = map_class()
+
     #Creating Neural Network
     import_data(city_map)
     step = 3.0
