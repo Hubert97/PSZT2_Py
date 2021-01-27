@@ -238,9 +238,9 @@ def generate_dataset(map_class):
 
     trace_back = []
     start_exploring(input_matrix, trace_back, map_class, 0 ,cost_traceback,cost)
-    print(input_matrix[1:10])
+    print(input_matrix[0:10])
     print(len(input_matrix))
-    print(cost[1:10])
+    print(cost[0:10])
 
 
 
