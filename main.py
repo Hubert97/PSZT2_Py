@@ -45,7 +45,6 @@ class Link_Class:
     id_begin = []
     id_end = []
     distance = 0
-    weight = 0
 
 class map_class:
     Node_Class = []
@@ -94,13 +93,16 @@ def import_data(map_class):
     print(len(map_class.Link_Class))
 
 
+def _sum(arr):
+    sum = 0
+    for i in arr:
+        sum = sum + i
+    return (sum)
 
-
-
-def explore_path(input_matrix , trace_back, source, map_class,tier, cost_trace_back):
+def explore_path(input_matrix , trace_back, source, map_class,tier, cost_trace_back,costs):
     new_tier = tier + 1
-    new_trace_back = trace_back
-    new_cost_trace_back = cost_trace_back
+    new_trace_back = trace_back.copy()
+    new_cost_trace_back = cost_trace_back.copy()
     for node in map_class.Node_Class:
         if source == node.id:
             new_trace_back.append(node.no)
@@ -108,12 +110,14 @@ def explore_path(input_matrix , trace_back, source, map_class,tier, cost_trace_b
     A = np.ones(18)
     B = np.array(-1)
     A = A.dot(B)
+
     for iter_b in range(0, len(new_trace_back)):
         A[iter_b] = new_trace_back[iter_b]
     input_matrix.append(A)      # wsadz nowa scierzke do macierzy
+    costs.append(_sum(new_cost_trace_back))
 
     iter_a = 0;
-    print(new_tier)
+
 
     for link in map_class.Link_Class:
 
@@ -128,7 +132,8 @@ def explore_path(input_matrix , trace_back, source, map_class,tier, cost_trace_b
                     chk_flag += 1
 
             if chk_flag == 0:
-                explore_path(input_matrix, new_trace_back, link.id_end, map_class, new_tier, new_cost_trace_back)
+                new_cost_trace_back.append(link.distance)
+                explore_path(input_matrix, new_trace_back, link.id_end, map_class, new_tier, new_cost_trace_back,costs)
                 iter_a += 1
         elif link.id_end == source:
             chk_flag = 0
@@ -141,15 +146,31 @@ def explore_path(input_matrix , trace_back, source, map_class,tier, cost_trace_b
                     chk_flag += 1
 
             if chk_flag == 0:
-                explore_path(input_matrix, new_trace_back, link.id_begin, map_class, new_tier, new_cost_trace_back)
+                new_cost_trace_back.append(link.distance)
+                explore_path(input_matrix, new_trace_back, link.id_begin, map_class, new_tier, new_cost_trace_back,costs)
                 iter_a += 1
 
 
 
 
-def start_exploring(input_matrix , trace_back, source, map_class,tier, cost_trace_back):
-    for node in map_class.Node_Class:
-        iter_a=0
+def start_exploring(input_matrix , trace_back, map_class,tier, cost_trace_back,costs):
+
+    for source in map_class.Node_Class:
+        new_tier = 0
+        new_trace_back = trace_back.copy()
+        new_cost_trace_back = cost_trace_back.copy()
+
+        for node in map_class.Node_Class:
+            if source.id == node.id:
+                new_trace_back.append(node.no)
+
+        for link in map_class.Link_Class:
+            if link.id_begin == source.id:    # jesli link begin jest roowny nodowi z ktorego wychodzimy
+                new_cost_trace_back.append(link.distance)
+                explore_path(input_matrix, new_trace_back, link.id_end, map_class, new_tier, new_cost_trace_back,costs)
+            elif link.id_end == source.id:
+                new_cost_trace_back.append(link.distance)
+                explore_path(input_matrix, new_trace_back, link.id_begin, map_class, new_tier, new_cost_trace_back,costs)
 
 
 
@@ -161,12 +182,13 @@ def generate_dataset(map_class):
     ilosc_danych=0
     input_matrix  = []
     cost = []
-    for iter_a in range (0,17):
-        trace_back = []
-        explore_path(input_matrix, trace_back, map_class.Node_Class[iter_a].id, map_class,0,cost)
-    print(input_matrix)
+    cost_traceback = []
+
+    trace_back = []
+    start_exploring(input_matrix, trace_back, map_class, 0 ,cost_traceback,cost)
+    print(input_matrix[1:10])
     print(len(input_matrix))
-    print(map_class.cost)
+    print(cost[1:10])
 
 
 
