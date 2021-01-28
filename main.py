@@ -65,49 +65,14 @@ class map_class:
     cost = []
 
 
-class LogisticRegressionMod:
-    step = 0
-    n_of_inputs = 0
-    decision_boundary = 0.5
-    estimators = []
-    def __init__(self, step, n_of_inputs):
-        self.n_of_inputs = n_of_inputs
-        self.step = step
-        self.estimators = [0] * (n_of_inputs + 1)
-
-
-    def logisticSum(self, path):
-        result = 0.0
-        for p, w in zip(path, self.estimators):
-            result += float(p) * w
-        return result
-
-
-    def predict(self, path):
-        return 1.0 / (1.0 + math.exp(-1 * self.logisticSum(path)))
-
-
-    def updateEstimators(self, path, classification, prediction):
-        for i in range(len(self.estimators)):
-            self.estimators[i] = self.estimators[i] - self.step * float(path[i]) * (prediction - classification)
-
-    def train(self, path, classification):
-        prediction = self.predict(path)
-        self.updateEstimators(path, classification, prediction)
-        self.step *= 0.99
-
-    def decide(self, path):
-        return self.predict(path) >= self.decision_boundary
-
-
 
 
 def classify(dist):
-    if dist < 781.75:
+    if dist < 1400:
         return 3
-    elif dist < 1563.5:
+    elif dist < 1800:
         return 2
-    elif dist < 2345.25:
+    elif dist < 2200:
         return 1
     else:
         return 0
@@ -273,14 +238,14 @@ def generate_dataset(map_class):
     #print(cost[1:10])
     #print(cost)
     maaap = {0: 0, 1: 0, 2:0, 3:0}
-    # for c in cost:
-    #     maaap[classify(c)] += 1
-    # print(maaap)
+    for c in cost:
+        maaap[classify(c)] += 1
+    print(maaap)
     #plt.plot(cost)
     #plt.show()
     input_matrix = np.array(input_matrix)
     cost = np.array(cost)
-    print(cost)
+    #print(cost)
     return input_matrix, cost
 
 def create_dataset(map_class, size):
@@ -337,11 +302,11 @@ def acc(output, label):
     # label: (batch, ) int32 ndarray
     return _sum(output.argmax(axis=1) == label.mean().asscalar())
 
-def main():
+def logict():
     city_map = map_class()
 
     import_data(city_map)
-    dataset_size = 300
+    dataset_size = 12000
     #matrix, cost = generate_dataset(city_map)
     matrix, cost = create_dataset(city_map, dataset_size)
     y = [classify(c) for c in cost]
@@ -359,22 +324,20 @@ def main():
     #print("Y: \n", y)
     x_train, x_test, y_train, y_test = train_test_split(x,y , test_size=0.2, random_state=0)
     scaler = StandardScaler()
-    x_train = scaler.fit_transform(x_train)
-    model = LogisticRegression(solver='liblinear', C=0.05, random_state=0, multi_class='ovr').fit(x_train, y_train)
-    x_test = scaler.transform(x_test)
+    #x_train = scaler.fit_transform(x_train)
+    model = LogisticRegression(solver='liblinear', C=1.0, random_state=0, multi_class='ovr').fit(x_train, y_train)
+    #x_test = scaler.transform(x_test)
     y_predicted = model.predict(x_test)
     print("TRAINING SCORE: ", model.score(x_train, y_train))
     print("TEST SCORE: ", model.score(x_test, y_test))
+    print(classification_report(y_test, y_predicted))
 
-    # for i in range(len(valid_visit)):
-    #     valid_visit[i] = format_input(valid_visit[i])
-    # #print(valid_visit)
-    # prediction = model.predict(valid_visit)
+
     # good = 0
     # bad = 0
     # #print("SCORE: ", model.score(x,y))
-    # for i in range(len(prediction)):
-    #     if prediction[i] == classify(valid_costs[i]):
+    # for i in range(len(y_predicted)):
+    #     if y_predicted[i] == classify(y_test[i]):
     #         good += 1
     #     else:
     #         bad += 1
@@ -387,7 +350,7 @@ def main():
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    main()
+    logict()
     #print('Program Init')
     #city_map = map_class()
 
