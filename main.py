@@ -2,16 +2,18 @@
 
 # Press Shift+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+import time
 
 import mxnet as mx
 from mxnet import nd
-from mxnet.gluon import nn
+from mxnet.gluon import nn, trainer
 from xml.dom import minidom
 import math
 import numpy as np
 import random
 
 from numpy.ma import corrcoef
+from mxnet import nd, gluon, init, autograd
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import classification_report, confusion_matrix
 
@@ -48,7 +50,7 @@ class Link_Class:
             if i.id == self.id_end:
                 delta_x = abs(delta_x - i.pos_x)
                 delta_y = abs(delta_y - i.pos_y)
-        self.distance = math.sqrt(delta_x * delta_x + delta_y * delta_y)
+        self.distance = math.sqrt(delta_x * delta_x + delta_y * delta_y)*111
     id_begin = []
     id_end = []
     distance = 0
@@ -98,15 +100,27 @@ class LogisticRegressionMod:
 
 
 def classify(dist):
-    if dist < 3:
+    if dist < 781.75:
         return 3
-    elif dist < 6:
+    elif dist < 1563.5:
         return 2
-    elif dist < 9:
+    elif dist < 2345.25:
         return 1
     else:
         return 0
 
+
+def classifynn(dist):
+    tmp = nd.zeros((1, 4))
+    if dist < 781.75:
+        tmp[0,3] = 1
+    elif dist < 1563.5 and dist >=781.75 :
+        tmp[0,2] = 1
+    elif dist < 2345.25 and dist >=1563.5:
+        tmp[0,1] = 1
+    else:
+        tmp[0,0] = 1
+    return tmp
 
 
 def import_data(map_class):
@@ -155,8 +169,7 @@ def explore_path(input_matrix , trace_back, source, map_class,tier, cost_trace_b
     new_tier = tier + 1
     new_trace_back = trace_back.copy()
     new_cost_trace_back = cost_trace_back.copy()
-    new_cost_trace_backA = cost_trace_back.copy()
-    new_cost_trace_backB = cost_trace_back.copy()
+
     for node in map_class.Node_Class:
         if source == node.id:
             new_trace_back.append(node.no)
@@ -176,6 +189,8 @@ def explore_path(input_matrix , trace_back, source, map_class,tier, cost_trace_b
 
     for link in map_class.Link_Class:
 
+        new_cost_trace_backA = cost_trace_back.copy()
+        new_cost_trace_backB = cost_trace_back.copy()
         if link.id_begin == source: # jesli link begin jest rowny nodowi z ktorego wychodzimy
             chk_flag = 0
             dst_id = -1
@@ -188,7 +203,7 @@ def explore_path(input_matrix , trace_back, source, map_class,tier, cost_trace_b
 
             if chk_flag == 0:
                 new_cost_trace_backA.append(link.distance)
-                explore_path(input_matrix, new_trace_back, link.id_end, map_class, new_tier, new_cost_trace_back,costs)
+                explore_path(input_matrix, new_trace_back, link.id_end, map_class, new_tier, new_cost_trace_backA,costs)
                 iter_a += 1
         elif link.id_end == source:
             chk_flag = 0
@@ -202,7 +217,7 @@ def explore_path(input_matrix , trace_back, source, map_class,tier, cost_trace_b
 
             if chk_flag == 0:
                 new_cost_trace_backB.append(link.distance)
-                explore_path(input_matrix, new_trace_back, link.id_begin, map_class, new_tier, new_cost_trace_back,costs)
+                explore_path(input_matrix, new_trace_back, link.id_begin, map_class, new_tier, new_cost_trace_backB,costs)
                 iter_a += 1
 
 
@@ -215,17 +230,20 @@ def start_exploring(input_matrix , trace_back, map_class,tier, cost_trace_back,c
         new_trace_back = trace_back.copy()
         new_cost_trace_back = cost_trace_back.copy()
 
+
         for node in map_class.Node_Class:
             if source.id == node.id:
                 new_trace_back.append(node.no)
 
         for link in map_class.Link_Class:
+            new_cost_trace_backA = cost_trace_back.copy()
+            new_cost_trace_backB = cost_trace_back.copy()
             if link.id_begin == source.id:    # jesli link begin jest roowny nodowi z ktorego wychodzimy
-                new_cost_trace_back.append(link.distance)
-                explore_path(input_matrix, new_trace_back, link.id_end, map_class, new_tier, new_cost_trace_back,costs)
+                new_cost_trace_backA.append(link.distance)
+                explore_path(input_matrix, new_trace_back, link.id_end, map_class, new_tier, new_cost_trace_backA,costs)
             elif link.id_end == source.id:
-                new_cost_trace_back.append(link.distance)
-                explore_path(input_matrix, new_trace_back, link.id_begin, map_class, new_tier, new_cost_trace_back,costs)
+                new_cost_trace_backB.append(link.distance)
+                explore_path(input_matrix, new_trace_back, link.id_begin, map_class, new_tier, new_cost_trace_backB,costs)
 
 
 def cut_path(path):
@@ -296,6 +314,20 @@ def classifyLogisticRegression(firstResult, secondResult):
         return int(secondResult == True)
 
 
+def softmax_crosss_entropy(output, label):
+    err=output.copy()
+    for i in range(0,len(err)):
+        err[i]=-err[i]/_sum(output)
+    err[classify(label)] = (output[classify(label)]/_sum(output))-1
+    return err
+
+
+
+def acc(output, label):
+    # output: (batch, num_output) float32 ndarray
+    # label: (batch, ) int32 ndarray
+    return _sum(output.argmax(axis=1) == label.mean().asscalar())
+
 
 
 # Press the green button in the gutter to run the script.
@@ -350,14 +382,65 @@ if __name__ == '__main__':
 
 
 
-    # net = nn.Sequential()
-    # # When instantiated, Sequential stores a chain of neural network layers.
-    # # Once presented with data, Sequential executes each layer in turn, using
-    # # the output of one layer as the input for the next
-    # with net.name_scope():
-    #     net.add(nn.Dense(17, activation="relu"))  # 1st layer (17 miast)
-    #     net.add(nn.Dense(128, activation="relu"))  # 2nd hidden layer
-    #     net.add(nn.Dense(64, activation="relu"))  # 2nd hidden layer
-    #     net.add(nn.Dense(4))                       #output layer
+    visit_matrix, cost_array = create_dataset(city_map, dataset_size)
+
+    train_visit, train_costs, valid_visit, valid_costs = divide_dataset(visit_matrix, cost_array, percentageToTrain)
+    print(len(visit_matrix))
+
+    batch_size=10000
+
+    net = nn.Sequential()
+    # When instantiated, Sequential stores a chain of neural network layers.
+    # Once presented with data, Sequential executes each layer in turn, using
+    # the output of one layer as the input for the next
+    with net.name_scope():
+        net.add(nn.Dense(4, activation="tanh"))  # 2nd hidden layer
+        net.add(nn.Dense(4, activation="tanh"))  # 2nd hidden layer
+        net.add(nn.Dense(4))  # output layer
+    net
+
+    softmax_cross_entropy = gluon.loss.L2Loss()
+
+
+
+    net.initialize(init=init.Xavier())
+    trainer = gluon.Trainer(net.collect_params(), 'sgd', {'learning_rate': 0.1})
+    for epoch in range(10):
+        train_loss, train_acc, valid_acc = 0., 0., 0.
+        tic = time.time()
+        for data, label in zip(train_visit, train_costs):
+            # forward + backward
+            with autograd.record():
+                x = nd.ones((1,18))
+                x[0,:] = data[:]    #   jebane gowno
+                output = net(x)
+                #print(output)
+                #print (classifynn(label))
+                loss = softmax_cross_entropy(output, classifynn(label))
+            loss.backward()
+            # update parameters
+            trainer.step(256)
+            # calculate training metrics
+            #train_loss += _sum(loss.mean().asscalar())
+            train_acc += loss
+            for data, label in zip(valid_visit, valid_costs):
+                x = nd.ones((1,18))
+                x[0,:] = data[:]    #   jebane gowno
+                valid_acc += softmax_cross_entropy(output, classifynn(label))
+            # calculate validation accuracy
+        print("Epoch %d  in %.1f sec" %( epoch, time.time() - tic))
+        print("Trainint ERR")
+        print(train_acc)
+        print("Validation Error")
+        print(valid_acc)
+        print("********************************")
+
+#            print("Epoch %d: train acc %.3f, test acc %.3f, in %.1f sec" % (
+#                epoch, train_acc / len(train_visit),
+#                valid_acc / len(valid_visit), time.time() - tic))
+
+
+
+
 
 
