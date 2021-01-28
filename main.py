@@ -19,6 +19,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
+from mxnet.gluon.data.vision.transforms import Normalize
 
 from parse import parse
 import matplotlib.pyplot as plt
@@ -80,11 +81,11 @@ def classify(dist):
 
 def classifynn(dist):
     tmp = nd.zeros((1, 4))
-    if dist < 781.75:
+    if dist < 1400.75:
         tmp[0,3] = 1
-    elif dist < 1563.5 and dist >=781.75 :
+    elif dist < 1800 and dist >=1400 :
         tmp[0,2] = 1
-    elif dist < 2345.25 and dist >=1563.5:
+    elif dist < 2200 and dist >=1800:
         tmp[0,1] = 1
     else:
         tmp[0,0] = 1
@@ -288,12 +289,16 @@ def classifyLogisticRegression(firstResult, secondResult):
         return int(secondResult == True)
 
 
-def softmax_crosss_entropy(output, label):
-    err=output.copy()
-    for i in range(0,len(err)):
-        err[i]=-err[i]/_sum(output)
-    err[classify(label)] = (output[classify(label)]/_sum(output))-1
-    return err
+def classify_nn(output):
+    tmp = output[0,:]
+    chosen=max(tmp)
+    int_i=4
+    for z in range(len(tmp)):
+        int_i -=1
+        if tmp[z]==chosen:
+            return z
+    print("Err")
+    return -1
 
 
 
@@ -350,40 +355,36 @@ def logict():
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    logict()
-    #print('Program Init')
-    #city_map = map_class()
+    #logict()
+    print('Program Init')
+    city_map = map_class()
 
-    # Creating Neural Network
-    #import_data(city_map)
+    import_data(city_map)
+    dataset_size = 12000
+    #matrix, cost = generate_dataset(city_map)
+    matrix, cost = create_dataset(city_map, dataset_size)
+    y = [classify(c) for c in cost]
+    y = np.array(y)
+    x = matrix
 
+    for i in range(len(x)):
+        x[i] = format_input(x[i])
 
-
-
-
-    # step = 1.0
-    # percentageToTrain = 0.8
-    # dataset_size = 15000
-    # parityBit = LogisticRegressionMod(step, _no_of_input_layers)
-    # lowerHalf = LogisticRegressionMod(step, _no_of_input_layers)
-    # upperHalf = LogisticRegressionMod(step, _no_of_input_layers)
-    # visit_matrix, cost_array = create_dataset(city_map, dataset_size)
-    # train_visit, train_costs, valid_visit, valid_costs = divide_dataset(visit_matrix, cost_array, percentageToTrain)
-    # for visit, cost in zip(train_visit, train_costs):
-    #     visit = cut_path(visit)
-    #     #print("Rozmiar tego guwna to ", len(visit))
-    #     classification = classify(cost)
-    #     formated_visit_array = format_input(visit)
-    #     #print("A rozmiar tego gunwa to ", len(formated_visit_array))
-    #     if classification <= 1:
-    #         parityBit.train(formated_visit_array, 0)
-    #         lowerHalf.train(formated_visit_array, classification)
-    #     else:
-    #         parityBit.train(formated_visit_array, 1)
-    #         upperHalf.train(formated_visit_array, classification % 2)
-    #
-    # good = 0
-    # bad = 0
+    #x = format_input(train_visit)
+    #print(train_visit)
+    #print(y)
+    #print(matrix)
+    #print("X:\n", x)
+    #print("Y: \n", y)
+    x_train, x_test, y_train, y_test = train_test_split(x,y , test_size=0.2, random_state=0)
+    scaler = StandardScaler()
+    #x_train = scaler.fit_transform(x_train)
+    model = LogisticRegression(solver='liblinear', C=1.0, random_state=0, multi_class='ovr').fit(x_train, y_train)
+    #x_test = scaler.transform(x_test)
+    y_predicted = model.predict(x_test)
+    print("TRAINING SCORE: ", model.score(x_train, y_train))
+    print("TEST SCORE: ", model.score(x_test, y_test))
+    print(classification_report(y_test, y_predicted))
     # for visit, cost in zip(valid_visit, valid_costs):
     #     visit = cut_path(visit)
     #
@@ -408,7 +409,7 @@ if __name__ == '__main__':
 
     visit_matrix, cost_array = create_dataset(city_map, dataset_size)
 
-    train_visit, train_costs, valid_visit, valid_costs = divide_dataset(visit_matrix, cost_array, 0.01)
+    train_visit, train_costs, valid_visit, valid_costs = divide_dataset(visit_matrix, cost_array, 0.5)
     print(len(visit_matrix))
 
     batch_size=len(train_visit)
@@ -418,57 +419,80 @@ if __name__ == '__main__':
     # Once presented with data, Sequential executes each layer in turn, using
     # the output of one layer as the input for the next
     with net.name_scope():
-        net.add(nn.Dense(4, activation="tanh"))  # 2nd hidden layer
-        net.add(nn.Dense(4, activation="tanh"))  # 2nd hidden layer
+        net.add(nn.Dense(128, activation="tanh"))  # 2nd hidden layer
+        net.add(nn.Dense(64, activation="tanh"))  # 2nd hidden layer
+        net.add(nn.Dense(32, activation="sigmoid"))  # 3rd hidden layer
         net.add(nn.Dense(4))  # output layer
     net
 
     softmax_cross_entropy = gluon.loss.L2Loss()
 
-
+    #softmax_cross_entropy = gluon.loss.SoftmaxCrossEntropyLoss()
 
     net.initialize(init=init.Xavier())
     trainer = gluon.Trainer(net.collect_params(), 'sgd', {'learning_rate': 0.1})
-    for epoch in range(10):
+    epochs =100
+    procent = 0
+    for epoch in range(epochs):
         train_loss, train_acc, valid_acc = 0., 0., 0.
         tic = time.time()
-        procent =0
+
         for data, label in zip(train_visit, train_costs):
             # forward + backward
             with autograd.record():
                 x = nd.ones((1,18))
                 x[0,:] = data[:]    #   jebane gowno
                 output = net(x)
+                #tmp = 1/_sum(output[0,:])
+                #output = output * tmp
                 #print(output)
                 #print (classifynn(label))
                 loss = softmax_cross_entropy(output, classifynn(label))
             loss.backward()
             # update parameters
-            trainer.step(batch_size)
-            trainer.save_states("NN_data.nn")
+            trainer.step(batch_size/10)
+
             # calculate training metrics
             #train_loss += _sum(loss.mean().asscalar())
             train_acc += loss
-            #for data, label in zip(valid_visit, valid_costs):
-                #x = nd.ones((1,18))
-                #x[0,:] = data[:]    #   jebane gowno
-                #valid_acc += softmax_cross_entropy(output, classifynn(label))
-            # calculate validation accuracy
+
         for data, label in zip(valid_visit, valid_costs):
             x = nd.ones((1,18))
             x[0,:] = data[:]    #   jebane gowno
+            output = net(x)
             valid_acc += softmax_cross_entropy(output, classifynn(label))
         #calculate validation accuracy
-        print("Epoch %d  in %.1f sec" %( epoch, time.time() - tic))
-        print("Trainint ERR")
-        print(train_acc)
-        print("Validation Error")
-        print(valid_acc)
-        print("********************************")
-
+        procent +=1
+        if procent > epochs/100:
+            procent = 0
+            print("Epoch %d  in %.1f sec" %( epoch, time.time() - tic))
+            print("Trainint ERR")
+            print(train_acc)
+            print("Validation Error")
+            print(valid_acc)
+            print("********************************")
+    trainer.save_states("NN_data.nn")
 #            print("Epoch %d: train acc %.3f, test acc %.3f, in %.1f sec" % (
 #                epoch, train_acc / len(train_visit),
 #                valid_acc / len(valid_visit), time.time() - tic))
+    good = 0
+    bad = 0
+    for data, label in zip(valid_visit, valid_costs):
+        x = nd.ones((1, 18))
+        x[0, :] = data[:]  # jebane gowno
+        output = net(x)
+
+        if classify_nn(output) == classify(label):
+            good +=1
+        else:
+            #print("Predicted", classify_nn(output), " In fact it is ", classify(label))
+            bad +=1
+
+    print("Good:",good)
+    print("bad: ",bad)
+    print("succes rate: ", good/(good+bad)*100, "%")
+
+
 
 
 
