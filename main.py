@@ -12,6 +12,8 @@ import numpy as np
 import random
 
 from numpy.ma import corrcoef
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import classification_report, confusion_matrix
 
 from parse import parse
 import matplotlib.pyplot as plt
@@ -58,41 +60,36 @@ class map_class:
     cost = []
 
 
-class LogisticRegression:
+class LogisticRegressionMod:
     step = 0
-    n_of_inputs = _no_of_input_layers + 1
+    n_of_inputs = 0
     decision_boundary = 0.5
-    weights = []
-    def __init__(self, step):
+    estimators = []
+    def __init__(self, step, n_of_inputs):
+        self.n_of_inputs = n_of_inputs
         self.step = step
-        for n in range(0, self.n_of_inputs):
-            self.weights.append(0.0)
+        self.estimators = [0] * (n_of_inputs + 1)
 
 
-    def logisticFunction(self, path):
+    def logisticSum(self, path):
         result = 0.0
-        for p, w in zip(path, self.weights):
+        for p, w in zip(path, self.estimators):
             result += float(p) * w
         return result
 
 
     def predict(self, path):
-        return 1.0 / (1 + math.exp(-1 * self.logisticFunction(path)))
+        return 1.0 / (1.0 + math.exp(-1 * self.logisticSum(path)))
 
 
-    def calculateCost(self, prediction, classification):
-        return (1.0 - classification) * math.log(1.0 - prediction) - math.log(prediction) * classification
-
-
-    def updateWeights(self, path, classification, prediction):
-        for i in range(len(self.weights)):
-            self.weights[i] = self.weights[i] - self.step * float(path[i]) * (prediction - classification)
+    def updateEstimators(self, path, classification, prediction):
+        for i in range(len(self.estimators)):
+            self.estimators[i] = self.estimators[i] - self.step * float(path[i]) * (prediction - classification)
 
     def train(self, path, classification):
         prediction = self.predict(path)
-        #cost = self.cost(prediction, classification)
-        self.updateWeights(path, prediction, classification)
-        self.step *= 0.999
+        self.updateEstimators(path, classification, prediction)
+        self.step *= 0.99
 
     def decide(self, path):
         return self.predict(path) >= self.decision_boundary
@@ -101,11 +98,11 @@ class LogisticRegression:
 
 
 def classify(dist):
-    if dist < 5:
+    if dist < 21:
         return 3
-    elif dist >= 5 and dist < 10:
+    elif dist < 27:
         return 2
-    elif dist >= 10 and dist < 15:
+    elif dist < 33:
         return 1
     else:
         return 0
@@ -228,6 +225,12 @@ def start_exploring(input_matrix , trace_back, map_class,tier, cost_trace_back,c
                 explore_path(input_matrix, new_trace_back, link.id_begin, map_class, new_tier, new_cost_trace_back,costs)
 
 
+def cut_path(path):
+    #path = path.tolist()
+    for i in range(len(path)):
+        if path[i] == -1:
+            path = path[:i]
+            return path
 
 
 
@@ -244,6 +247,13 @@ def generate_dataset(map_class):
     #print(input_matrix[1:100])
     #print(len(input_matrix))
     #print(cost[1:10])
+    #print(cost)
+    maaap = {0: 0, 1: 0, 2:0, 3:0}
+    for c in cost:
+        maaap[classify(c)] += 1
+    print(maaap)
+    #plt.plot(cost)
+    #plt.show()
     return input_matrix, cost
 
 def create_dataset(map_class, size):
@@ -268,9 +278,11 @@ def divide_dataset(visit_matrix, cost_array, percentageToTrain):
 def format_input(path):
     inputs = [0] * (_no_of_input_layers + 1)
     #print(_no_of_input_layers)
+    #print(path)
     for city_id in path:
         #print(city_id)
         inputs[int(city_id)] = 1
+    #print(inputs)
     return inputs
 
 def classifyLogisticRegression(firstResult, secondResult):
@@ -289,27 +301,32 @@ if __name__ == '__main__':
 
     #Creating Neural Network
     import_data(city_map)
-    step = 3.0
+    step = 1.0
     percentageToTrain = 0.8
-    dataset_size = 10000
-    parityBit = LogisticRegression(step=step)
-    lowerHalf = LogisticRegression(step=step)
-    upperHalf = LogisticRegression(step=step)
+    dataset_size = 15000
+    parityBit = LogisticRegressionMod(step, _no_of_input_layers)
+    lowerHalf = LogisticRegressionMod(step, _no_of_input_layers)
+    upperHalf = LogisticRegressionMod(step, _no_of_input_layers)
     visit_matrix, cost_array = create_dataset(city_map, dataset_size)
     train_visit, train_costs, valid_visit, valid_costs = divide_dataset(visit_matrix, cost_array, percentageToTrain)
-
     for visit, cost in zip(train_visit, train_costs):
+        visit = cut_path(visit)
+        #print("Rozmiar tego guwna to ", len(visit))
         classification = classify(cost)
         formated_visit_array = format_input(visit)
+        #print("A rozmiar tego gunwa to ", len(formated_visit_array))
         if classification <= 1:
             parityBit.train(formated_visit_array, 0)
             lowerHalf.train(formated_visit_array, classification)
         else:
             parityBit.train(formated_visit_array, 1)
             upperHalf.train(formated_visit_array, classification % 2)
+
     good = 0
     bad = 0
     for visit, cost in zip(valid_visit, valid_costs):
+        visit = cut_path(visit)
+
         formated_visit_array = format_input(visit)
         predict1 = parityBit.decide(formated_visit_array)
         if predict1:
@@ -324,18 +341,19 @@ if __name__ == '__main__':
 
     print("GOOD GUESSES:", good)
     print("BAD GUESSES:", bad)
+    print("GOOD PERCENTAGE", good / (good+bad) * 100)
 
 
 
 
-    net = nn.Sequential()
-    # When instantiated, Sequential stores a chain of neural network layers.
-    # Once presented with data, Sequential executes each layer in turn, using
-    # the output of one layer as the input for the next
-    with net.name_scope():
-        net.add(nn.Dense(17, activation="relu"))  # 1st layer (17 miast)
-        net.add(nn.Dense(128, activation="relu"))  # 2nd hidden layer
-        net.add(nn.Dense(64, activation="relu"))  # 2nd hidden layer
-        net.add(nn.Dense(4))                       #output layer
+    # net = nn.Sequential()
+    # # When instantiated, Sequential stores a chain of neural network layers.
+    # # Once presented with data, Sequential executes each layer in turn, using
+    # # the output of one layer as the input for the next
+    # with net.name_scope():
+    #     net.add(nn.Dense(17, activation="relu"))  # 1st layer (17 miast)
+    #     net.add(nn.Dense(128, activation="relu"))  # 2nd hidden layer
+    #     net.add(nn.Dense(64, activation="relu"))  # 2nd hidden layer
+    #     net.add(nn.Dense(4))                       #output layer
 
 
