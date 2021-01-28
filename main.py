@@ -12,8 +12,11 @@ import numpy as np
 import random
 
 from numpy.ma import corrcoef
+from sklearn.datasets import load_digits
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import classification_report, confusion_matrix
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
 
 from parse import parse
 import matplotlib.pyplot as plt
@@ -249,22 +252,27 @@ def generate_dataset(map_class):
     #print(cost[1:10])
     #print(cost)
     maaap = {0: 0, 1: 0, 2:0, 3:0}
-    for c in cost:
-        maaap[classify(c)] += 1
-    print(maaap)
+    # for c in cost:
+    #     maaap[classify(c)] += 1
+    # print(maaap)
     #plt.plot(cost)
     #plt.show()
+    input_matrix = np.array(input_matrix)
+    cost = np.array(cost)
+    print(cost)
     return input_matrix, cost
 
 def create_dataset(map_class, size):
     visit_matrix, cost_array = generate_dataset(map_class)
     result_matrix = []
     result_cost = []
+    visit_matrix = visit_matrix.tolist()
+    cost_array = cost_array.tolist()
     for i in range(size):
         rand = random.randint(0, len(visit_matrix) - 1)
         result_matrix.append(visit_matrix.pop(rand))
         result_cost.append(cost_array.pop(rand))
-    return result_matrix, result_cost
+    return np.array(result_matrix), np.array(result_cost)
 
 
 def divide_dataset(visit_matrix, cost_array, percentageToTrain):
@@ -280,10 +288,11 @@ def format_input(path):
     #print(_no_of_input_layers)
     #print(path)
     for city_id in path:
-        #print(city_id)
+        if city_id == -1:
+            break
         inputs[int(city_id)] = 1
     #print(inputs)
-    return inputs
+    return np.array(inputs)
 
 def classifyLogisticRegression(firstResult, secondResult):
     if firstResult:
@@ -292,57 +301,109 @@ def classifyLogisticRegression(firstResult, secondResult):
         return int(secondResult == True)
 
 
+def main():
+    city_map = map_class()
+
+    import_data(city_map)
+    dataset_size = 300
+    #matrix, cost = generate_dataset(city_map)
+    matrix, cost = create_dataset(city_map, dataset_size)
+    y = [classify(c) for c in cost]
+    y = np.array(y)
+    x = matrix
+
+    for i in range(len(x)):
+        x[i] = format_input(x[i])
+
+    #x = format_input(train_visit)
+    #print(train_visit)
+    #print(y)
+    #print(matrix)
+    #print("X:\n", x)
+    #print("Y: \n", y)
+    x_train, x_test, y_train, y_test = train_test_split(x,y , test_size=0.2, random_state=0)
+    scaler = StandardScaler()
+    x_train = scaler.fit_transform(x_train)
+    model = LogisticRegression(solver='liblinear', C=0.05, random_state=0, multi_class='ovr').fit(x_train, y_train)
+    x_test = scaler.transform(x_test)
+    y_predicted = model.predict(x_test)
+    print("TRAINING SCORE: ", model.score(x_train, y_train))
+    print("TEST SCORE: ", model.score(x_test, y_test))
+
+    # for i in range(len(valid_visit)):
+    #     valid_visit[i] = format_input(valid_visit[i])
+    # #print(valid_visit)
+    # prediction = model.predict(valid_visit)
+    # good = 0
+    # bad = 0
+    # #print("SCORE: ", model.score(x,y))
+    # for i in range(len(prediction)):
+    #     if prediction[i] == classify(valid_costs[i]):
+    #         good += 1
+    #     else:
+    #         bad += 1
+    #
+    # print("GOOD GUESSES: ", good)
+    # print("BAD GUESSES: ", bad)
+    # print("PERCENTAGE: ", good/(good+bad) * 100)
+
 
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    print('Program Init')
-    city_map = map_class()
+    main()
+    #print('Program Init')
+    #city_map = map_class()
 
-    #Creating Neural Network
-    import_data(city_map)
-    step = 1.0
-    percentageToTrain = 0.8
-    dataset_size = 15000
-    parityBit = LogisticRegressionMod(step, _no_of_input_layers)
-    lowerHalf = LogisticRegressionMod(step, _no_of_input_layers)
-    upperHalf = LogisticRegressionMod(step, _no_of_input_layers)
-    visit_matrix, cost_array = create_dataset(city_map, dataset_size)
-    train_visit, train_costs, valid_visit, valid_costs = divide_dataset(visit_matrix, cost_array, percentageToTrain)
-    for visit, cost in zip(train_visit, train_costs):
-        visit = cut_path(visit)
-        #print("Rozmiar tego guwna to ", len(visit))
-        classification = classify(cost)
-        formated_visit_array = format_input(visit)
-        #print("A rozmiar tego gunwa to ", len(formated_visit_array))
-        if classification <= 1:
-            parityBit.train(formated_visit_array, 0)
-            lowerHalf.train(formated_visit_array, classification)
-        else:
-            parityBit.train(formated_visit_array, 1)
-            upperHalf.train(formated_visit_array, classification % 2)
+    # Creating Neural Network
+    #import_data(city_map)
 
-    good = 0
-    bad = 0
-    for visit, cost in zip(valid_visit, valid_costs):
-        visit = cut_path(visit)
 
-        formated_visit_array = format_input(visit)
-        predict1 = parityBit.decide(formated_visit_array)
-        if predict1:
-            predict2 = upperHalf.decide(formated_visit_array)
-        else:
-            predict2 = lowerHalf.decide(formated_visit_array)
 
-        if classifyLogisticRegression(predict1, predict2) == classify(cost):
-            good += 1
-        else:
-            bad += 1
 
-    print("GOOD GUESSES:", good)
-    print("BAD GUESSES:", bad)
-    print("GOOD PERCENTAGE", good / (good+bad) * 100)
 
+    # step = 1.0
+    # percentageToTrain = 0.8
+    # dataset_size = 15000
+    # parityBit = LogisticRegressionMod(step, _no_of_input_layers)
+    # lowerHalf = LogisticRegressionMod(step, _no_of_input_layers)
+    # upperHalf = LogisticRegressionMod(step, _no_of_input_layers)
+    # visit_matrix, cost_array = create_dataset(city_map, dataset_size)
+    # train_visit, train_costs, valid_visit, valid_costs = divide_dataset(visit_matrix, cost_array, percentageToTrain)
+    # for visit, cost in zip(train_visit, train_costs):
+    #     visit = cut_path(visit)
+    #     #print("Rozmiar tego guwna to ", len(visit))
+    #     classification = classify(cost)
+    #     formated_visit_array = format_input(visit)
+    #     #print("A rozmiar tego gunwa to ", len(formated_visit_array))
+    #     if classification <= 1:
+    #         parityBit.train(formated_visit_array, 0)
+    #         lowerHalf.train(formated_visit_array, classification)
+    #     else:
+    #         parityBit.train(formated_visit_array, 1)
+    #         upperHalf.train(formated_visit_array, classification % 2)
+    #
+    # good = 0
+    # bad = 0
+    # for visit, cost in zip(valid_visit, valid_costs):
+    #     visit = cut_path(visit)
+    #
+    #     formated_visit_array = format_input(visit)
+    #     predict1 = parityBit.decide(formated_visit_array)
+    #     if predict1:
+    #         predict2 = upperHalf.decide(formated_visit_array)
+    #     else:
+    #         predict2 = lowerHalf.decide(formated_visit_array)
+    #
+    #     if classifyLogisticRegression(predict1, predict2) == classify(cost):
+    #         good += 1
+    #     else:
+    #         bad += 1
+    #
+    # print("GOOD GUESSES:", good)
+    # print("BAD GUESSES:", bad)
+    # print("GOOD PERCENTAGE", good / (good+bad) * 100)
+    #
 
 
 
