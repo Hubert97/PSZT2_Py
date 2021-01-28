@@ -98,11 +98,11 @@ class LogisticRegressionMod:
 
 
 def classify(dist):
-    if dist < 21:
+    if dist < 3:
         return 3
-    elif dist < 27:
+    elif dist < 6:
         return 2
-    elif dist < 33:
+    elif dist < 9:
         return 1
     else:
         return 0
@@ -261,6 +261,7 @@ def generate_dataset(map_class):
 
 def create_dataset(map_class, size):
     visit_matrix, cost_array = generate_dataset(map_class)
+    print("Max Val : ",max(cost_array)," , Min Val :", min(cost_array))
     result_matrix = []
     result_cost = []
     for i in range(size):
