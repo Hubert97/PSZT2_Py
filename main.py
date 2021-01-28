@@ -301,8 +301,8 @@ def divide_dataset(visit_matrix, cost_array, percentageToTrain):
     divide_index = int(percentageToTrain * len(visit_matrix))
     train_visit = visit_matrix[:divide_index]
     train_costs = cost_array[:divide_index]
-    valid_visit = visit_matrix[divide_index:]
-    valid_costs = cost_array[divide_index:]
+    valid_visit = visit_matrix[len(visit_matrix)-divide_index:]
+    valid_costs = cost_array[len(visit_matrix)-divide_index:]
     return train_visit, train_costs, valid_visit, valid_costs
 
 def format_input(path):
@@ -482,16 +482,20 @@ if __name__ == '__main__':
             loss.backward()
             # update parameters
             trainer.step(batch_size)
+            trainer.save_states("NN_data.nn")
             # calculate training metrics
             #train_loss += _sum(loss.mean().asscalar())
             train_acc += loss
-            for data, label in zip(valid_visit, valid_costs):
-                x = nd.ones((1,18))
-                x[0,:] = data[:]    #   jebane gowno
-                valid_acc += softmax_cross_entropy(output, classifynn(label))
+            #for data, label in zip(valid_visit, valid_costs):
+                #x = nd.ones((1,18))
+                #x[0,:] = data[:]    #   jebane gowno
+                #valid_acc += softmax_cross_entropy(output, classifynn(label))
             # calculate validation accuracy
-            procent +=1
-            print(procent/len(train_visit)*100,"%")
+        for data, label in zip(valid_visit, valid_costs):
+            x = nd.ones((1,18))
+            x[0,:] = data[:]    #   jebane gowno
+            valid_acc += softmax_cross_entropy(output, classifynn(label))
+        #calculate validation accuracy
         print("Epoch %d  in %.1f sec" %( epoch, time.time() - tic))
         print("Trainint ERR")
         print(train_acc)
