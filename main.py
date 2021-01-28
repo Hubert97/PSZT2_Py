@@ -155,6 +155,8 @@ def explore_path(input_matrix , trace_back, source, map_class,tier, cost_trace_b
     new_tier = tier + 1
     new_trace_back = trace_back.copy()
     new_cost_trace_back = cost_trace_back.copy()
+    new_cost_trace_backA = cost_trace_back.copy()
+    new_cost_trace_backB = cost_trace_back.copy()
     for node in map_class.Node_Class:
         if source == node.id:
             new_trace_back.append(node.no)
@@ -165,6 +167,7 @@ def explore_path(input_matrix , trace_back, source, map_class,tier, cost_trace_b
 
     for iter_b in range(0, len(new_trace_back)):
         A[iter_b] = new_trace_back[iter_b]
+
     input_matrix.append(A)      # wsadz nowa scieżke do macierzy
     costs.append(_sum(new_cost_trace_back))
 
@@ -184,7 +187,7 @@ def explore_path(input_matrix , trace_back, source, map_class,tier, cost_trace_b
                     chk_flag += 1
 
             if chk_flag == 0:
-                new_cost_trace_back.append(link.distance)
+                new_cost_trace_backA.append(link.distance)
                 explore_path(input_matrix, new_trace_back, link.id_end, map_class, new_tier, new_cost_trace_back,costs)
                 iter_a += 1
         elif link.id_end == source:
@@ -198,7 +201,7 @@ def explore_path(input_matrix , trace_back, source, map_class,tier, cost_trace_b
                     chk_flag += 1
 
             if chk_flag == 0:
-                new_cost_trace_back.append(link.distance)
+                new_cost_trace_backB.append(link.distance)
                 explore_path(input_matrix, new_trace_back, link.id_begin, map_class, new_tier, new_cost_trace_back,costs)
                 iter_a += 1
 
