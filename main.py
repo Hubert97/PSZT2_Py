@@ -419,9 +419,8 @@ if __name__ == '__main__':
     # Once presented with data, Sequential executes each layer in turn, using
     # the output of one layer as the input for the next
     with net.name_scope():
-        net.add(nn.Dense(128, activation="tanh"))  # 2nd hidden layer
-        net.add(nn.Dense(64, activation="tanh"))  # 2nd hidden layer
-        net.add(nn.Dense(32, activation="sigmoid"))  # 3rd hidden layer
+        net.add(nn.Dense(1280, activation="tanh"))  # 2nd hidden layer
+        net.add(nn.Dense(640, activation="tanh"))  # 2nd hidden layer
         net.add(nn.Dense(4))  # output layer
     net
 
@@ -431,7 +430,7 @@ if __name__ == '__main__':
 
     net.initialize(init=init.Xavier())
     trainer = gluon.Trainer(net.collect_params(), 'sgd', {'learning_rate': 0.1})
-    epochs =100
+    epochs =400
     procent = 0
     for epoch in range(epochs):
         train_loss, train_acc, valid_acc = 0., 0., 0.
@@ -450,7 +449,7 @@ if __name__ == '__main__':
                 loss = softmax_cross_entropy(output, classifynn(label))
             loss.backward()
             # update parameters
-            trainer.step(batch_size/10)
+            trainer.step(batch_size/1000)
 
             # calculate training metrics
             #train_loss += _sum(loss.mean().asscalar())
