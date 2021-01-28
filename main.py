@@ -384,11 +384,11 @@ if __name__ == '__main__':
 
     visit_matrix, cost_array = create_dataset(city_map, dataset_size)
 
-    train_visit, train_costs, valid_visit, valid_costs = divide_dataset(visit_matrix, cost_array, percentageToTrain)
+    train_visit, train_costs, valid_visit, valid_costs = divide_dataset(visit_matrix, cost_array, 0.01)
     print(len(visit_matrix))
 
-    batch_size=10000
-
+    batch_size=len(train_visit)
+    print(batch_size)
     net = nn.Sequential()
     # When instantiated, Sequential stores a chain of neural network layers.
     # Once presented with data, Sequential executes each layer in turn, using
@@ -408,6 +408,7 @@ if __name__ == '__main__':
     for epoch in range(10):
         train_loss, train_acc, valid_acc = 0., 0., 0.
         tic = time.time()
+        procent =0
         for data, label in zip(train_visit, train_costs):
             # forward + backward
             with autograd.record():
@@ -419,7 +420,7 @@ if __name__ == '__main__':
                 loss = softmax_cross_entropy(output, classifynn(label))
             loss.backward()
             # update parameters
-            trainer.step(256)
+            trainer.step(batch_size)
             # calculate training metrics
             #train_loss += _sum(loss.mean().asscalar())
             train_acc += loss
@@ -428,6 +429,8 @@ if __name__ == '__main__':
                 x[0,:] = data[:]    #   jebane gowno
                 valid_acc += softmax_cross_entropy(output, classifynn(label))
             # calculate validation accuracy
+            procent +=1
+            print(procent/len(train_visit)*100,"%")
         print("Epoch %d  in %.1f sec" %( epoch, time.time() - tic))
         print("Trainint ERR")
         print(train_acc)
