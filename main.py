@@ -414,9 +414,7 @@ def neural_network(city_map, dataset_size):
             # print("Predicted", classify_nn(output), " In fact it is ", classify(label))
             bad += 1
 
-    print("Good:", good)
-    print("bad: ", bad)
-    print("succes rate: ", good / (good + bad) * 100, "%")
+    return good / (good+bad)
 
 def test_model(initial_dataset_size, step_between_tests, iterations, n_of_tests, filename, model):
     datasize = initial_dataset_size
