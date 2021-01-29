@@ -458,17 +458,89 @@ if __name__ == '__main__':
             x = nd.ones((1,18))
             x[0,:] = data[:]    #   jebane gowno
             valid_acc += softmax_cross_entropy(output, classifynn(label))
-        #calculate validation accuracy
-        print("Epoch %d  in %.1f sec" %( epoch, time.time() - tic))
-        print("Trainint ERR")
-        print(train_acc)
-        print("Validation Error")
-        print(valid_acc)
-        print("********************************")
+        # calculate validation accuracy
+        procent += 1
+        if procent > epochs / 100:
+            procent = 0
+            print("Epoch %d  in %.1f sec" % (epoch, time.time() - tic))
+            print("Trainint ERR")
+            print(train_acc)
+            print("Validation Error")
+            print(valid_acc)
+            print("********************************")
+    trainer.save_states("NN_data.nn")
+    #            print("Epoch %d: train acc %.3f, test acc %.3f, in %.1f sec" % (
+    #                epoch, train_acc / len(train_visit),
+    #                valid_acc / len(valid_visit), time.time() - tic))
+    good = 0
+    bad = 0
+    for data, label in zip(valid_visit, valid_costs):
+        x = nd.ones((1, 18))
+        x[0, :] = data[:]  # jebane gowno
+        output = net(x)
 
-#            print("Epoch %d: train acc %.3f, test acc %.3f, in %.1f sec" % (
-#                epoch, train_acc / len(train_visit),
-#                valid_acc / len(valid_visit), time.time() - tic))
+        if classify_nn(output) == classify(label):
+            good += 1
+        else:
+            # print("Predicted", classify_nn(output), " In fact it is ", classify(label))
+            bad += 1
+
+    print("Good:", good)
+    print("bad: ", bad)
+    print("succes rate: ", good / (good + bad) * 100, "%")
+
+
+# Press the green button in the gutter to run the script.
+if __name__ == '__main__':
+    city_map = map_class()
+    import_data(city_map)
+    if len(sys.argv) > 1:
+        try:
+            opts, args = getopt.getopt(sys.argv[1:], "hn:s:i:t:o:")
+        except getopt.GetoptError:
+            print ('main.py -n [initial dataset size] -s [step between tests] -i [iterations on each test] -t [number of tests] -o [output file]')
+            sys.exit(2)
+        for o, a in opts:
+            if o == "-n":
+                initial_dataset_size = int(a)
+            elif o == "-s":
+                step_between_tests = int(a)
+            elif o == "-i":
+                iterations = int(a)
+            elif o == "-t":
+                n_of_tests = int(a)
+            elif o == "-o":
+                filename = a
+            else:
+                print('Usage: main.py -n [initial dataset size] -s [step between tests] -i [iterations on each test] -t [number of tests] -o [output file]')
+                sys.exit(0)
+
+
+        datasize = initial_dataset_size
+        results = []
+        while n_of_tests > 0:
+            iter_counter = 0
+            scores = []
+            while iter_counter < iterations:
+                scores.append(logict(city_map, datasize))
+                iter_counter += 1
+            results.append((datasize, np.array(scores).mean()))
+            datasize += step_between_tests
+            n_of_tests -= 1
+
+        df = pd.DataFrame(results,columns=["Dataset size", "Efficiency on test set"])
+        df.to_csv(filename, index=None)
+    else:
+        print("Using default mode, to see help on use {} -h", sys.argv[0])
+        dataset_size = 1200
+
+
+        logict(city_map, dataset_size)
+
+        #neural_network(city_map, dataset_size)
+
+
+
 
 
 
