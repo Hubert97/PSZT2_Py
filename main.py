@@ -57,13 +57,12 @@ class Link_Class:
     id_end = []
     distance = 0
 
+
 class map_class:
     Node_Class = []
     Link_Class = []
     Dataset = []
     cost = []
-
-
 
 
 def classify(dist):
@@ -99,7 +98,6 @@ def import_data(map_class):
     for s in Node_List:
         tmpstr=s.toxml()
         iter_i += 1
-        # print(tmpstr)
         cor_x = 0.0
         cor_y = 0.0
         r=parse("<node id={}<x>{}</x>{}<y>{}</y>{}/node>", tmpstr)
@@ -108,7 +106,6 @@ def import_data(map_class):
         map_class.Node_Class.append(Node_Class(s.attributes['id'].value,cor_x,cor_y,iter_i))
     Link_List=xmldoc.getElementsByTagName("link")
     for s in Link_List:
-        # print(s.attributes['id'].value)
         r=parse("{}<source>{}</source>{}<target>{}</target>{}", s.toxml())
         source=r[1]
         destination=r[3]
@@ -203,7 +200,6 @@ def start_exploring(input_matrix , trace_back, map_class,tier, cost_trace_back,c
 
 
 def cut_path(path):
-    #path = path.tolist()
     for i in range(len(path)):
         if path[i] == -1:
             path = path[:i]
@@ -218,10 +214,11 @@ def generate_dataset(map_class):
 
     trace_back = []
     start_exploring(input_matrix, trace_back, map_class, 0 ,cost_traceback,cost)
-    # maaap = {0: 0, 1: 0, 2:0, 3:0}
-    # for c in cost:
-    #     maaap[classify(c)] += 1
-    # print(maaap)
+
+    maaap = {0: 0, 1: 0, 2:0, 3:0}
+    for c in cost:
+        maaap[classify(c)] += 1
+    print("Number of paths of given class: ", maaap)
     input_matrix = np.array(input_matrix)
     cost = np.array(cost)
     return input_matrix, cost
@@ -249,13 +246,10 @@ def divide_dataset(visit_matrix, cost_array, percentageToTrain):
 
 def format_input(path):
     inputs = [0] * (_no_of_input_layers + 1)
-    #print(_no_of_input_layers)
-    #print(path)
     for city_id in path:
         if city_id == -1:
             break
         inputs[int(city_id)] = 1
-    #print(inputs)
     return np.array(inputs)
 
 def classifyLogisticRegression(firstResult, secondResult):
@@ -273,14 +267,12 @@ def classify_nn(output):
         int_i -=1
         if tmp[z]==chosen:
             return z
-    print("Err")
+    print("Error")
     return -1
 
 
 
 def acc(output, label):
-    # output: (batch, num_output) float32 ndarray
-    # label: (batch, ) int32 ndarray
     return _sum(output.argmax(axis=1) == label.mean().asscalar())
 
 def logict(city_map, dataset_size):
@@ -301,12 +293,11 @@ def logict(city_map, dataset_size):
 
     model = LogisticRegression(solver='saga', C=0.33, random_state=None, multi_class='multinomial', n_jobs=-1, penalty='l1').fit(x_train, y_train)
 
-    y_predicted = model.predict(x_test)
-    print("TRAINING SCORE: ", model.score(x_train, y_train))
-    print("TEST SCORE: ", model.score(x_test, y_test))
+    print("TRAINING SET SCORE: ", model.score(x_train, y_train))
+    print("TEST SET SCORE: ", model.score(x_test, y_test))
 
-    #print(classification_report(y_test, y_predicted))
     return model.score(x_test, y_test)
+
 
 def knn(city_map, dataset_size):
 
@@ -326,11 +317,9 @@ def knn(city_map, dataset_size):
 
     model = KNeighborsClassifier(n_jobs=-1).fit(x_train, y_train)
 
-    y_predicted = model.predict(x_test)
     print("TRAINING SCORE: ", model.score(x_train, y_train))
     print("TEST SCORE: ", model.score(x_test, y_test))
 
-    #print(classification_report(y_test, y_predicted))
     return model.score(x_test, y_test)
 
 def neural_network(city_map, dataset_size):
@@ -348,6 +337,8 @@ def neural_network(city_map, dataset_size):
     with net.name_scope():
         net.add(nn.Dense(1280, activation="tanh"))  # 2nd hidden layer
         net.add(nn.Dense(640, activation="tanh"))  # 2nd hidden layer
+        net.add(nn.Dense(640, activation="tanh"))  # 2nd hidden layer
+        net.add(nn.Dense(640, activation="tanh"))  # 2nd hidden layer
         net.add(nn.Dense(4))  # output layer
     net
 
@@ -357,7 +348,7 @@ def neural_network(city_map, dataset_size):
 
     net.initialize(init=init.Xavier())
     trainer = gluon.Trainer(net.collect_params(), 'sgd', {'learning_rate': 0.1})
-    epochs = 400
+    epochs = 300
     procent = 0
     for epoch in range(epochs):
         train_loss, train_acc, valid_acc = 0., 0., 0.
@@ -371,8 +362,6 @@ def neural_network(city_map, dataset_size):
                 output = net(x)
                 # tmp = 1/_sum(output[0,:])
                 # output = output * tmp
-                # print(output)
-                # print (classifynn(label))
                 loss = softmax_cross_entropy(output, classifynn(label))
             loss.backward()
             # update parameters
@@ -398,9 +387,6 @@ def neural_network(city_map, dataset_size):
             print(valid_acc)
             print("********************************")
     trainer.save_states("NN_data.nn")
-    #            print("Epoch %d: train acc %.3f, test acc %.3f, in %.1f sec" % (
-    #                epoch, train_acc / len(train_visit),
-    #                valid_acc / len(valid_visit), time.time() - tic))
     good = 0
     bad = 0
     for data, label in zip(valid_visit, valid_costs):
@@ -411,7 +397,6 @@ def neural_network(city_map, dataset_size):
         if classify_nn(output) == classify(label):
             good += 1
         else:
-            # print("Predicted", classify_nn(output), " In fact it is ", classify(label))
             bad += 1
 
     return good / (good+bad)
@@ -441,7 +426,7 @@ if __name__ == '__main__':
         try:
             opts, args = getopt.getopt(sys.argv[1:], "hm:n:s:i:t:o:")
         except getopt.GetoptError:
-            print ('Usage: ./main.py -m [lr | nn | knn]-n [initial dataset size] -s [step between tests] -i [iterations on each test] -t [number of tests] -o [output file]')
+            print ('Usage: ./main.py -m [lr | nn | knn] -n [initial dataset size] -s [step between tests] -i [iterations on each test] -t [number of tests] -o [output file]')
             sys.exit(2)
         for o, a in opts:
             if o == "-n":
@@ -463,6 +448,7 @@ if __name__ == '__main__':
                     model = knn
                 else:
                     "Unknown model. Use lr for Logistic Regression, nn for Neural Network or knn for K nearest neighbors"
+                    sys.exit(2)
             else:
                 print('Usage: ./main.py -m [lr | nn | knn] -n [initial dataset size] -s [step between tests] -i [iterations on each test] -t [number of tests] -o [output file]')
                 sys.exit(0)
@@ -472,7 +458,7 @@ if __name__ == '__main__':
 
     else:
         print("Using default mode, to see help on use {} -h".format(sys.argv[0]))
-        dataset_size = 12000
+        dataset_size = 6000
         print("Dataset size: {}".format(dataset_size))
         print("Logistic Regression:")
         logict(city_map, dataset_size)
