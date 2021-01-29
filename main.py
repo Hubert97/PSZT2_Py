@@ -1,26 +1,22 @@
 #!/usr/bin/env python3
 import time
 
-import mxnet as mx
-from mxnet import nd
-from mxnet.gluon import nn, trainer
-from xml.dom import minidom
+
 import math
 import numpy as np
 import pandas as pd
 import random
-
 import sys
 import getopt
-from numpy.ma import corrcoef
+
 from mxnet import nd, gluon, init, autograd
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.neighbors import KNeighborsClassifier
-
 from parse import parse
-import matplotlib.pyplot as plt
+from mxnet.gluon import nn, trainer
+from xml.dom import minidom
 
 
 _no_of_input_layers = 0
@@ -218,7 +214,7 @@ def generate_dataset(map_class):
     maaap = {0: 0, 1: 0, 2:0, 3:0}
     for c in cost:
         maaap[classify(c)] += 1
-    print("Number of paths of given class: ", maaap)
+    # print("Number of paths of given class: ", maaap)
     input_matrix = np.array(input_matrix)
     cost = np.array(cost)
     return input_matrix, cost
@@ -325,7 +321,7 @@ def knn(city_map, dataset_size):
 def neural_network(city_map, dataset_size):
     visit_matrix, cost_array = create_dataset(city_map, dataset_size)
 
-    train_visit, train_costs, valid_visit, valid_costs = divide_dataset(visit_matrix, cost_array, 0.5)
+    train_visit, train_costs, valid_visit, valid_costs = divide_dataset(visit_matrix, cost_array, 0.25)
     print(len(visit_matrix))
 
     batch_size = len(train_visit)
@@ -335,10 +331,9 @@ def neural_network(city_map, dataset_size):
     # Once presented with data, Sequential executes each layer in turn, using
     # the output of one layer as the input for the next
     with net.name_scope():
-        net.add(nn.Dense(1280, activation="tanh"))  # 2nd hidden layer
-        net.add(nn.Dense(640, activation="tanh"))  # 2nd hidden layer
-        net.add(nn.Dense(640, activation="tanh"))  # 2nd hidden layer
-        net.add(nn.Dense(640, activation="tanh"))  # 2nd hidden layer
+        net.add(nn.Dense(128, activation="tanh"))  # 2nd hidden layer
+        net.add(nn.Dense(64, activation="tanh"))  # 2nd hidden layer
+        net.add(nn.Dense(64, activation="tanh"))  # 2nd hidden layer
         net.add(nn.Dense(4))  # output layer
     net
 
@@ -348,7 +343,7 @@ def neural_network(city_map, dataset_size):
 
     net.initialize(init=init.Xavier())
     trainer = gluon.Trainer(net.collect_params(), 'sgd', {'learning_rate': 0.1})
-    epochs = 300
+    epochs = 20
     procent = 0
     for epoch in range(epochs):
         train_loss, train_acc, valid_acc = 0., 0., 0.
@@ -362,10 +357,12 @@ def neural_network(city_map, dataset_size):
                 output = net(x)
                 # tmp = 1/_sum(output[0,:])
                 # output = output * tmp
+                # print(output)
+                # print (classifynn(label))
                 loss = softmax_cross_entropy(output, classifynn(label))
             loss.backward()
             # update parameters
-            trainer.step(batch_size / 1000)
+            trainer.step(5)
 
             # calculate training metrics
             # train_loss += _sum(loss.mean().asscalar())
@@ -387,6 +384,9 @@ def neural_network(city_map, dataset_size):
             print(valid_acc)
             print("********************************")
     trainer.save_states("NN_data.nn")
+    #            print("Epoch %d: train acc %.3f, test acc %.3f, in %.1f sec" % (
+    #                epoch, train_acc / len(train_visit),
+    #                valid_acc / len(valid_visit), time.time() - tic))
     good = 0
     bad = 0
     for data, label in zip(valid_visit, valid_costs):
@@ -397,6 +397,7 @@ def neural_network(city_map, dataset_size):
         if classify_nn(output) == classify(label):
             good += 1
         else:
+            # print("Predicted", classify_nn(output), " In fact it is ", classify(label))
             bad += 1
 
     return good / (good+bad)
@@ -465,7 +466,7 @@ if __name__ == '__main__':
         print("K Nearest Neighbors:")
         knn(city_map, dataset_size)
 
-        #neural_network(city_map, dataset_size)
+        neural_network(city_map, 6000)
 
 
 
