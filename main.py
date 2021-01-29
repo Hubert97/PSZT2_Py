@@ -421,6 +421,8 @@ if __name__ == '__main__':
     with net.name_scope():
         net.add(nn.Dense(1280, activation="tanh"))  # 2nd hidden layer
         net.add(nn.Dense(640, activation="tanh"))  # 2nd hidden layer
+        net.add(nn.Dense(640, activation="tanh"))  # 2nd hidden layer
+        net.add(nn.Dense(640, activation="tanh"))  # 2nd hidden layer
         net.add(nn.Dense(4))  # output layer
     net
 
@@ -430,7 +432,7 @@ if __name__ == '__main__':
 
     net.initialize(init=init.Xavier())
     trainer = gluon.Trainer(net.collect_params(), 'sgd', {'learning_rate': 0.1})
-    epochs =400
+    epochs =300
     procent = 0
     for epoch in range(epochs):
         train_loss, train_acc, valid_acc = 0., 0., 0.
