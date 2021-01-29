@@ -437,7 +437,7 @@ if __name__ == '__main__':
         df = pd.DataFrame(results,columns=["Dataset size", "Efficiency on test set"])
         df.to_csv(filename, index=None)
     else:
-        print("Using default mode, to see help on use {} -h", sys.argv[0])
+        print("Using default mode, to see help on use {} -h".format(sys.argv[0]))
         dataset_size = 1200
 
 
