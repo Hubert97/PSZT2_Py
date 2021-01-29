@@ -14,12 +14,10 @@ import sys
 import getopt
 from numpy.ma import corrcoef
 from mxnet import nd, gluon, init, autograd
-from sklearn.datasets import load_digits
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
-from mxnet.gluon.data.vision.transforms import Normalize
+from sklearn.neighbors import KNeighborsClassifier
 
 from parse import parse
 import matplotlib.pyplot as plt
@@ -301,7 +299,32 @@ def logict(city_map, dataset_size):
     x_train = scaler.fit_transform(x_train)
     x_test = scaler.transform(x_test)
 
-    model = LogisticRegression(solver='saga', C=0.33, random_state=None, multi_class='auto', n_jobs=-1, penalty='l1').fit(x_train, y_train)
+    model = LogisticRegression(solver='saga', C=0.33, random_state=None, multi_class='multinomial', n_jobs=-1, penalty='l1').fit(x_train, y_train)
+
+    y_predicted = model.predict(x_test)
+    print("TRAINING SCORE: ", model.score(x_train, y_train))
+    print("TEST SCORE: ", model.score(x_test, y_test))
+
+    #print(classification_report(y_test, y_predicted))
+    return model.score(x_test, y_test)
+
+def knn(city_map, dataset_size):
+
+    matrix, cost = create_dataset(city_map, dataset_size)
+    y = [classify(c) for c in cost]
+    y = np.array(y)
+    x = matrix
+
+    for i in range(len(x)):
+        x[i] = format_input(x[i])
+
+    x_train, x_test, y_train, y_test = train_test_split(x,y , test_size=0.2, random_state=0)
+
+    scaler = StandardScaler()
+    x_train = scaler.fit_transform(x_train)
+    x_test = scaler.transform(x_test)
+
+    model = KNeighborsClassifier(n_jobs=-1).fit(x_train, y_train)
 
     y_predicted = model.predict(x_test)
     print("TRAINING SCORE: ", model.score(x_train, y_train))
@@ -361,7 +384,7 @@ def neural_network(city_map, dataset_size):
 
         for data, label in zip(valid_visit, valid_costs):
             x = nd.ones((1, 18))
-            x[0, :] = data[:]  # jebane gowno
+            x[0, :] = data[:]
             output = net(x)
             valid_acc += softmax_cross_entropy(output, classifynn(label))
         # calculate validation accuracy
@@ -382,7 +405,7 @@ def neural_network(city_map, dataset_size):
     bad = 0
     for data, label in zip(valid_visit, valid_costs):
         x = nd.ones((1, 18))
-        x[0, :] = data[:]  # jebane gowno
+        x[0, :] = data[:]
         output = net(x)
 
         if classify_nn(output) == classify(label):
@@ -395,6 +418,22 @@ def neural_network(city_map, dataset_size):
     print("bad: ", bad)
     print("succes rate: ", good / (good + bad) * 100, "%")
 
+def test_model(initial_dataset_size, step_between_tests, iterations, n_of_tests, filename, model):
+    datasize = initial_dataset_size
+    results = []
+    while n_of_tests > 0:
+        iter_counter = 0
+        scores = []
+        while iter_counter < iterations:
+            scores.append(model(city_map, datasize))
+            iter_counter += 1
+        results.append((datasize, np.array(scores).mean()))
+        datasize += step_between_tests
+        n_of_tests -= 1
+
+    df = pd.DataFrame(results, columns=["Dataset size", "Efficiency on test set"])
+    df.to_csv(filename, index=None)
+
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
@@ -402,9 +441,9 @@ if __name__ == '__main__':
     import_data(city_map)
     if len(sys.argv) > 1:
         try:
-            opts, args = getopt.getopt(sys.argv[1:], "hn:s:i:t:o:")
+            opts, args = getopt.getopt(sys.argv[1:], "hm:n:s:i:t:o:")
         except getopt.GetoptError:
-            print ('main.py -n [initial dataset size] -s [step between tests] -i [iterations on each test] -t [number of tests] -o [output file]')
+            print ('Usage: ./main.py -m [lr | nn | knn]-n [initial dataset size] -s [step between tests] -i [iterations on each test] -t [number of tests] -o [output file]')
             sys.exit(2)
         for o, a in opts:
             if o == "-n":
@@ -417,31 +456,30 @@ if __name__ == '__main__':
                 n_of_tests = int(a)
             elif o == "-o":
                 filename = a
+            elif o == "-m":
+                if a == "lr":
+                    model = logict
+                elif a == "nn":
+                    model = neural_network
+                elif a == "knn":
+                    model = knn
+                else:
+                    "Unknown model. Use lr for Logistic Regression, nn for Neural Network or knn for K nearest neighbors"
             else:
-                print('Usage: main.py -n [initial dataset size] -s [step between tests] -i [iterations on each test] -t [number of tests] -o [output file]')
+                print('Usage: ./main.py -m [lr | nn | knn] -n [initial dataset size] -s [step between tests] -i [iterations on each test] -t [number of tests] -o [output file]')
                 sys.exit(0)
+        test_model(initial_dataset_size, step_between_tests, iterations, n_of_tests, filename, model)
 
 
-        datasize = initial_dataset_size
-        results = []
-        while n_of_tests > 0:
-            iter_counter = 0
-            scores = []
-            while iter_counter < iterations:
-                scores.append(logict(city_map, datasize))
-                iter_counter += 1
-            results.append((datasize, np.array(scores).mean()))
-            datasize += step_between_tests
-            n_of_tests -= 1
 
-        df = pd.DataFrame(results,columns=["Dataset size", "Efficiency on test set"])
-        df.to_csv(filename, index=None)
     else:
         print("Using default mode, to see help on use {} -h".format(sys.argv[0]))
-        dataset_size = 1200
-
-
+        dataset_size = 12000
+        print("Dataset size: {}".format(dataset_size))
+        print("Logistic Regression:")
         logict(city_map, dataset_size)
+        print("K Nearest Neighbors:")
+        knn(city_map, dataset_size)
 
         #neural_network(city_map, dataset_size)
 
